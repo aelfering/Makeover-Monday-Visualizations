@@ -29,7 +29,13 @@ head(health_spending)
 str(health_spending)
 
 # filter on total spending based on usd per capita
-total_spending <- dplyr::filter(health_spending,
+total_spending <- health_spending %>%
+  filter(SUBJECT == 'TOT',
+         MEASURE == 'USD_CAP') %>%
+  mutate(LOCATION1 = LOCATION)
+  
+  
+  dplyr::filter(health_spending,
                                 SUBJECT == 'TOT',
                                 MEASURE == 'USD_CAP')
 
@@ -47,20 +53,20 @@ rank_max <- total_spending %>%
   filter(RankDense <= 3)
 
 # the final visualization
-ggplot(subset(spend_change, LOCATION %in% rank_min$LOCATION), 
+ggplot(subset(total_spending, LOCATION %in% rank_min$LOCATION), 
        aes(x = TIME, 
            y = Value/100,
            group = LOCATION1)) + 
-  geom_line(data = transform(spend_change, LOCATION = NULL), 
+  geom_line(data = transform(total_spending, LOCATION = NULL), 
             aes(group = LOCATION1), 
             size = 1.5,
             color = '#d4d4d4',
             alpha = 0.4) +   
-  geom_line(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION), 
+  geom_line(data = transform(total_spending, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION), 
             aes(group = LOCATION1), 
             size = 1.5,
             color = '#969696') +   
-  geom_point(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION, TIME == max(TIME)), 
+  geom_point(data = transform(total_spending, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION, TIME == max(TIME)), 
             aes(group = LOCATION1), 
             size = 3,
             color = '#969696') +   
@@ -68,27 +74,27 @@ ggplot(subset(spend_change, LOCATION %in% rank_min$LOCATION),
              color = '#898989',
              linetype = 'dashed',
              size = 1) +
-  geom_line(subset(spend_change, LOCATION %in% rank_min$LOCATION),
+  geom_line(subset(total_spending, LOCATION %in% rank_min$LOCATION),
             mapping = aes(group = LOCATION), 
             color = '#F56831',
             size = 1.5) + 
-  geom_point(data = subset(spend_change, LOCATION %in% rank_min$LOCATION & TIME == max(TIME)),
+  geom_point(data = subset(total_spending, LOCATION %in% rank_min$LOCATION & TIME == max(TIME)),
              mapping = aes(x = TIME,
                            y = Value/100), 
              color = '#F56831',
              size = 3) +
-  geom_label_repel(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION, TIME == max(TIME)),
+  geom_label_repel(data = transform(total_spending, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION, TIME == max(TIME)),
                    mapping = aes(x = TIME,
                                  y = Value/100,
                                  label = LOCATION1),
                    box.padding = 2) +
-  geom_label_repel(data = subset(spend_change, LOCATION %in% rank_min$LOCATION & TIME == max(TIME)),
+  geom_label_repel(data = subset(total_spending, LOCATION %in% rank_min$LOCATION & TIME == max(TIME)),
                    mapping = aes(x = TIME,
                                  y = Value/100,
                                  label = round(Value, 2)),
                    box.padding = 2) +
   scale_colour_identity() + 
-  facet_wrap(~LOCATION, nrow = 2) +
+  facet_wrap(~LOCATION, nrow = 1) +
   labs(title = 'Which Countries Spends the Least on Compulsory Health Spending?',
        subtitle = 'Based on US per Capita as 2019\n\nAs of 2019, the only country to see a decline in compulsory health spending was Hungary \n',
        x = 'Year\n',
