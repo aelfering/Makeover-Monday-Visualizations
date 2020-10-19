@@ -42,16 +42,16 @@ spend_change <- total_spending %>%
   mutate(Change = Value - Init_Pct,
          LOCATION1 = LOCATION)
 
-rank_max <- spend_change %>%
+rank_min <- spend_change %>%
   filter(TIME == max(TIME)) %>%
   mutate(RankDense = dense_rank((Value))) %>%
-  filter(RankDense <= 10)
+  filter(RankDense <= 5)
 
 spend_change$LOCATION1 <- factor(spend_change$LOCATION1, levels = unique(spend_change$LOCATION1[order(spend_change$Change)]))
 
 spend_change[order(-spend_change$Change),]
 
-ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION), 
+ggplot(subset(spend_change, LOCATION %in% rank_min$LOCATION), 
        aes(x = TIME, 
            y = Value/100,
            group = LOCATION1)) + 
@@ -72,11 +72,11 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
              color = '#898989',
              linetype = 'dashed',
              size = 1) +
-  geom_line(subset(spend_change, LOCATION %in% rank_max$LOCATION),
+  geom_line(subset(spend_change, LOCATION %in% rank_min$LOCATION),
             mapping = aes(group = LOCATION), 
             color = '#F56831',
             size = 1.5) + 
-  geom_point(data = subset(spend_change, LOCATION %in% rank_max$LOCATION & TIME == max(TIME)),
+  geom_point(data = subset(spend_change, LOCATION %in% rank_min$LOCATION & TIME == max(TIME)),
              mapping = aes(x = TIME,
                            y = Value/100), 
              color = '#F56831',
@@ -86,19 +86,18 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
               label = LOCATION1), 
           method = list(dl.combine("last.points")), 
           cex = 0.8) +
-  geom_label_repel(data = subset(spend_change, LOCATION %in% rank_max$LOCATION & TIME == max(TIME)),
+  geom_label_repel(data = subset(spend_change, LOCATION %in% rank_min$LOCATION & TIME == max(TIME)),
                    mapping = aes(x = TIME,
                                  y = Value/100,
                                  label = paste('+', round(Change, 2), '%', sep = '')),
                    box.padding = 2) +
   scale_colour_identity() + 
   scale_y_continuous(labels = percent) +
-  facet_wrap(~LOCATION, nrow = 2) +
+  facet_wrap(~LOCATION, nrow = 1) +
   labs(title = 'Which Countries saw the Smallest Increase in Compulsory Health Care Spending?',
        subtitle = 'Based on Percent of Total GDP as 2019\n\nAs of 2019, the only country to see a decline in compulsory health care spending was Hungary \n',
        x = 'Year\n',
-       y = 'Change in Percent of GDP\n',
-       color = 'Countries',
+       y = 'Percent of GDP\n',
        caption = 'Visualization by Alex Elfering | Data Source: OECD\nDesign inspired by John Burn-Murdoch') +
   theme(plot.title = element_text(face = 'bold', size = 18, family = 'Arial'),
         legend.position = 'top',
