@@ -27,7 +27,7 @@ str(health_spending)
 
 total_spending <- dplyr::filter(health_spending,
                                 SUBJECT == 'COMPULSORY',
-                                MEASURE == 'PC_GDP')
+                                MEASURE == 'USD_CAP')
 
 # How has the change in health care spending based on GDP changed since 1971?
 init_gdp <- total_spending %>%
@@ -47,6 +47,11 @@ rank_min <- spend_change %>%
   mutate(RankDense = dense_rank((Value))) %>%
   filter(RankDense <= 5)
 
+rank_max <- spend_change %>%
+  filter(TIME == max(TIME)) %>%
+  mutate(RankDense = dense_rank(desc(Value))) %>%
+  filter(RankDense <= 3)
+
 spend_change$LOCATION1 <- factor(spend_change$LOCATION1, levels = unique(spend_change$LOCATION1[order(spend_change$Change)]))
 
 spend_change[order(-spend_change$Change),]
@@ -60,11 +65,11 @@ ggplot(subset(spend_change, LOCATION %in% rank_min$LOCATION),
             size = 1.5,
             color = '#d4d4d4',
             alpha = 0.4) +   
-  geom_line(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% c('USA', 'DEU', 'CHE')), 
+  geom_line(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION), 
             aes(group = LOCATION1), 
             size = 1.5,
             color = '#969696') +   
-  geom_point(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% c('USA', 'DEU', 'CHE'), TIME == max(TIME)), 
+  geom_point(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION, TIME == max(TIME)), 
             aes(group = LOCATION1), 
             size = 3,
             color = '#969696') +   
@@ -81,21 +86,20 @@ ggplot(subset(spend_change, LOCATION %in% rank_min$LOCATION),
                            y = Value/100), 
              color = '#F56831',
              size = 3) +
-  geom_dl(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% c('USA', 'DEU', 'CHE'), TIME == max(TIME)),
-          aes(group = LOCATION1,
-              label = LOCATION1), 
-          method = list(dl.combine("last.points")), 
-          cex = 0.8) +
+  geom_label_repel(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% rank_max$LOCATION, TIME == max(TIME)),
+                   mapping = aes(x = TIME,
+                                 y = Value/100,
+                                 label = LOCATION1),
+                   box.padding = 2) +
   geom_label_repel(data = subset(spend_change, LOCATION %in% rank_min$LOCATION & TIME == max(TIME)),
                    mapping = aes(x = TIME,
                                  y = Value/100,
-                                 label = paste('+', round(Change, 2), '%', sep = '')),
+                                 label = round(Value, 2)),
                    box.padding = 2) +
   scale_colour_identity() + 
-  scale_y_continuous(labels = percent) +
   facet_wrap(~LOCATION, nrow = 1) +
-  labs(title = 'Which Countries saw the Smallest Increase in Compulsory Health Care Spending?',
-       subtitle = 'Based on Percent of Total GDP as 2019\n\nAs of 2019, the only country to see a decline in compulsory health care spending was Hungary \n',
+  labs(title = 'Which Countries Spends the Least on Compulsory Health Care Spending?',
+       subtitle = 'Based on US per Capita as 2019\n\nAs of 2019, the only country to see a decline in compulsory health care spending was Hungary \n',
        x = 'Year\n',
        y = 'Percent of GDP\n',
        caption = 'Visualization by Alex Elfering | Data Source: OECD\nDesign inspired by John Burn-Murdoch') +
