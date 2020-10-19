@@ -1,7 +1,8 @@
 list.of.packages <- c("ggplot2", 
                       'dplyr', 
                       'tidyverse', 
-                      'tidyr')
+                      'tidyr',
+                      'ggrepel')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -10,6 +11,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(tidyverse)
+library(ggrepel)
 
 setwd("~/GitHub/Makeover-Monday-Visualizations/2020 W42 - Healthcare Spending")
 
@@ -39,7 +41,7 @@ spend_change <- total_spending %>%
 rank_max <- spend_change %>%
   filter(TIME == max(TIME)) %>%
   mutate(RankDense = dense_rank(desc(Value))) %>%
-  filter(RankDense <= 6)
+  filter(RankDense <= 10)
 
 spend_change$LOCATION1 <- factor(spend_change$LOCATION1, levels = unique(spend_change$LOCATION1[order(spend_change$Change)]))
 
@@ -75,8 +77,8 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
                    box.padding = 2) +
   scale_colour_identity() + 
   facet_wrap(~LOCATION, nrow = 2) +
-  labs(title = 'Which Countries saw the Largest Increase in Health Care Spending as a Percent of GDP?',
-       subtitle = 'Based on Change in Percent of Total GDP\n\nHealth care spending is defined as \n',
+  labs(title = 'Which Countries saw the Largest Increase in Health Care Spending?',
+       subtitle = 'Based on Change in Percent of Total GDP since 1970\n\nHealth care spending is defined as \n',
        x = 'Year\n',
        y = 'Change in Percent of GDP\n',
        color = 'Countries',
