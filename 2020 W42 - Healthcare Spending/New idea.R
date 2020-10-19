@@ -2,7 +2,9 @@ list.of.packages <- c("ggplot2",
                       'dplyr', 
                       'tidyverse', 
                       'tidyr',
-                      'ggrepel')
+                      'ggrepel',
+                      'directlabels',
+                      'scales')
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages)
 
@@ -12,6 +14,8 @@ library(dplyr)
 library(tidyr)
 library(tidyverse)
 library(ggrepel)
+library(directlabels)
+library(scales)
 
 setwd("~/GitHub/Makeover-Monday-Visualizations/2020 W42 - Healthcare Spending")
 
@@ -59,8 +63,11 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
   geom_line(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% c('USA', 'DEU', 'CHE')), 
             aes(group = LOCATION1), 
             size = 1.5,
-            color = '#969696',
-            alpha = 0.7) +   
+            color = '#969696') +   
+  geom_point(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% c('USA', 'DEU', 'CHE'), TIME == max(TIME)), 
+            aes(group = LOCATION1), 
+            size = 3,
+            color = '#969696') +   
   geom_hline(yintercept = 0,
              color = '#898989',
              linetype = 'dashed',
@@ -74,15 +81,21 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
                            y = Value/100), 
              color = '#F56831',
              size = 3) +
+  geom_dl(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% c('USA', 'DEU', 'CHE'), TIME == max(TIME)),
+          aes(group = LOCATION1,
+              label = LOCATION1), 
+          method = list(dl.combine("last.points")), 
+          cex = 0.8) +
   geom_label_repel(data = subset(spend_change, LOCATION %in% rank_max$LOCATION & TIME == max(TIME)),
                    mapping = aes(x = TIME,
                                  y = Value/100,
                                  label = paste('+', round(Change, 2), '%', sep = '')),
                    box.padding = 2) +
   scale_colour_identity() + 
+  scale_y_continuous(labels = percent) +
   facet_wrap(~LOCATION, nrow = 2) +
-  labs(title = 'Which Countries saw the Largest Increase in Health Care Spending?',
-       subtitle = 'Based on Percent of Total GDP since 1970\n\nHealth care spending is defined as \n',
+  labs(title = 'Which Countries saw the Smallest Increase in Compulsory Health Care Spending?',
+       subtitle = 'Based on Percent of Total GDP as 2019\n\nAs of 2019, the only country to see a decline in compulsory health care spending was Hungary \n',
        x = 'Year\n',
        y = 'Change in Percent of GDP\n',
        color = 'Countries',
