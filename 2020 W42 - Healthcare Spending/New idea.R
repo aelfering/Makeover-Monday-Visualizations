@@ -76,7 +76,7 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
   scale_colour_identity() + 
   facet_wrap(~LOCATION, nrow = 2) +
   labs(title = 'Which Countries saw the Largest Increase in Health Care Spending as a Percent of GDP?',
-       subtitle = 'Based on Change in Percent of Total GDP\nHealth care spending is defined as ',
+       subtitle = 'Based on Change in Percent of Total GDP\n\nHealth care spending is defined as \n',
        x = 'Year\n',
        y = 'Change in Percent of GDP\n',
        color = 'Countries',
