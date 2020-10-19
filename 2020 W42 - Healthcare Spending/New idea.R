@@ -1,3 +1,4 @@
+# load data
 list.of.packages <- c("ggplot2", 
                       'dplyr', 
                       'tidyverse', 
@@ -17,45 +18,35 @@ library(ggrepel)
 library(directlabels)
 library(scales)
 
+# set wd and data source
 setwd("~/GitHub/Makeover-Monday-Visualizations/2020 W42 - Healthcare Spending")
 
 health_spending <- read.csv('health spending.csv',
                             fileEncoding="UTF-8-BOM")
 
+# what does this data look like?
 head(health_spending)
 str(health_spending)
 
+# filter on total spending based on usd per capita
 total_spending <- dplyr::filter(health_spending,
-                                SUBJECT == 'COMPULSORY',
+                                SUBJECT == 'TOT',
                                 MEASURE == 'USD_CAP')
 
-# How has the change in health care spending based on GDP changed since 1971?
-init_gdp <- total_spending %>%
-  group_by(LOCATION) %>%
-  slice(which.min(TIME)) %>%
-  ungroup() %>%
-  select(LOCATION,
-         Init_Pct = Value)
-
-spend_change <- total_spending %>%
-  inner_join(init_gdp) %>%
-  mutate(Change = Value - Init_Pct,
-         LOCATION1 = LOCATION)
-
-rank_min <- spend_change %>%
+# which countries have the least spending as 2019?
+rank_min <- total_spending %>%
   filter(TIME == max(TIME)) %>%
   mutate(RankDense = dense_rank((Value))) %>%
   filter(RankDense <= 5)
 
-rank_max <- spend_change %>%
+# which countries have the most spending as of 2019?
+# this will be for reference in the final visualization
+rank_max <- total_spending %>%
   filter(TIME == max(TIME)) %>%
   mutate(RankDense = dense_rank(desc(Value))) %>%
   filter(RankDense <= 3)
 
-spend_change$LOCATION1 <- factor(spend_change$LOCATION1, levels = unique(spend_change$LOCATION1[order(spend_change$Change)]))
-
-spend_change[order(-spend_change$Change),]
-
+# the final visualization
 ggplot(subset(spend_change, LOCATION %in% rank_min$LOCATION), 
        aes(x = TIME, 
            y = Value/100,
@@ -97,12 +88,12 @@ ggplot(subset(spend_change, LOCATION %in% rank_min$LOCATION),
                                  label = round(Value, 2)),
                    box.padding = 2) +
   scale_colour_identity() + 
-  facet_wrap(~LOCATION, nrow = 1) +
-  labs(title = 'Which Countries Spends the Least on Compulsory Health Care Spending?',
-       subtitle = 'Based on US per Capita as 2019\n\nAs of 2019, the only country to see a decline in compulsory health care spending was Hungary \n',
+  facet_wrap(~LOCATION, nrow = 2) +
+  labs(title = 'Which Countries Spends the Least on Compulsory Health Spending?',
+       subtitle = 'Based on US per Capita as 2019\n\nAs of 2019, the only country to see a decline in compulsory health spending was Hungary \n',
        x = 'Year\n',
        y = 'Percent of GDP\n',
-       caption = 'Visualization by Alex Elfering | Data Source: OECD\nDesign inspired by John Burn-Murdoch') +
+       caption = 'Compulsory health spending includes government spending and health insurance.\nVisualization by Alex Elfering | Data Source: OECD\nDesign inspired by John Burn-Murdoch') +
   theme(plot.title = element_text(face = 'bold', size = 18, family = 'Arial'),
         legend.position = 'top',
         legend.background=element_blank(),
