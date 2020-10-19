@@ -22,7 +22,7 @@ head(health_spending)
 str(health_spending)
 
 total_spending <- dplyr::filter(health_spending,
-                                SUBJECT == 'TOT',
+                                SUBJECT == 'COMPULSORY',
                                 MEASURE == 'PC_GDP')
 
 # How has the change in health care spending based on GDP changed since 1971?
@@ -40,7 +40,7 @@ spend_change <- total_spending %>%
 
 rank_max <- spend_change %>%
   filter(TIME == max(TIME)) %>%
-  mutate(RankDense = dense_rank(desc(Value))) %>%
+  mutate(RankDense = dense_rank((Value))) %>%
   filter(RankDense <= 10)
 
 spend_change$LOCATION1 <- factor(spend_change$LOCATION1, levels = unique(spend_change$LOCATION1[order(spend_change$Change)]))
@@ -49,14 +49,18 @@ spend_change[order(-spend_change$Change),]
 
 ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION), 
        aes(x = TIME, 
-           y = Change/100,
+           y = Value/100,
            group = LOCATION1)) + 
-  geom_line(data = transform(spend_change,
-                             LOCATION = NULL), 
+  geom_line(data = transform(spend_change, LOCATION = NULL), 
             aes(group = LOCATION1), 
             size = 1.5,
             color = '#d4d4d4',
             alpha = 0.4) +   
+  geom_line(data = transform(spend_change, LOCATION = NULL) %>% filter(LOCATION1 %in% c('USA', 'DEU', 'CHE')), 
+            aes(group = LOCATION1), 
+            size = 1.5,
+            color = '#969696',
+            alpha = 0.7) +   
   geom_hline(yintercept = 0,
              color = '#898989',
              linetype = 'dashed',
@@ -67,18 +71,18 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
             size = 1.5) + 
   geom_point(data = subset(spend_change, LOCATION %in% rank_max$LOCATION & TIME == max(TIME)),
              mapping = aes(x = TIME,
-                           y = Change/100), 
+                           y = Value/100), 
              color = '#F56831',
              size = 3) +
   geom_label_repel(data = subset(spend_change, LOCATION %in% rank_max$LOCATION & TIME == max(TIME)),
                    mapping = aes(x = TIME,
-                                 y = Change/100,
+                                 y = Value/100,
                                  label = paste('+', round(Change, 2), '%', sep = '')),
                    box.padding = 2) +
   scale_colour_identity() + 
   facet_wrap(~LOCATION, nrow = 2) +
   labs(title = 'Which Countries saw the Largest Increase in Health Care Spending?',
-       subtitle = 'Based on Change in Percent of Total GDP since 1970\n\nHealth care spending is defined as \n',
+       subtitle = 'Based on Percent of Total GDP since 1970\n\nHealth care spending is defined as \n',
        x = 'Year\n',
        y = 'Change in Percent of GDP\n',
        color = 'Countries',
@@ -92,10 +96,10 @@ ggplot(subset(spend_change, LOCATION %in% rank_max$LOCATION),
         plot.subtitle = element_text(size = 15, family = 'Arial'),
         plot.caption = element_text(size = 12, family = 'Arial'),
         axis.title = element_text(size = 12, family = 'Arial'),
-        axis.text = element_text(size = 12, family = 'Arial'),
+        axis.text = element_text(size = 8, family = 'Arial'),
         strip.text = ggplot2::element_text(size = 12, hjust = 0, face = 'bold', color = 'black', family = 'Arial'),
         strip.background = element_rect(fill = NA),
-        panel.background = ggplot2::element_blank(),
+        panel.background = element_rect(fill = NA, color = "black"),
         axis.line = element_line(colour = "#222222", linetype = "solid"),
         panel.grid.major.y = element_line(colour = "#c1c1c1", linetype = "dashed"),
         panel.grid.major.x = element_blank()) 
