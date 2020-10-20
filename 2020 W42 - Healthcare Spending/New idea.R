@@ -34,16 +34,15 @@ total_spending <- health_spending %>%
          MEASURE == 'USD_CAP') %>%
   mutate(LOCATION1 = LOCATION)
   
-  
-  dplyr::filter(health_spending,
-                                SUBJECT == 'TOT',
-                                MEASURE == 'USD_CAP')
+head(total_spending)
+
+total_spending <- dplyr::filter(total_spending, TIME == max(TIME))
 
 # which countries have the least spending as 2019?
 rank_min <- total_spending %>%
   filter(TIME == max(TIME)) %>%
   mutate(RankDense = dense_rank((Value))) %>%
-  filter(RankDense <= 5)
+  filter(RankDense <= 6)
 
 # which countries have the most spending as of 2019?
 # this will be for reference in the final visualization
@@ -51,6 +50,8 @@ rank_max <- total_spending %>%
   filter(TIME == max(TIME)) %>%
   mutate(RankDense = dense_rank(desc(Value))) %>%
   filter(RankDense <= 3)
+
+total_spending$LOCATION <- factor(total_spending$LOCATION, levels = unique(total_spending$LOCATION[order(total_spending$Value)]))
 
 # the final visualization
 ggplot(subset(total_spending, LOCATION %in% rank_min$LOCATION), 
@@ -96,7 +97,7 @@ ggplot(subset(total_spending, LOCATION %in% rank_min$LOCATION),
   scale_colour_identity() + 
   facet_wrap(~LOCATION, nrow = 1) +
   labs(title = 'Which Countries Spends the Least on Compulsory Health Spending?',
-       subtitle = 'Based on US per Capita as 2019\n\nAs of 2019, the only country to see a decline in compulsory health spending was Hungary \n',
+       subtitle = 'Based on US per Capita as 2019\n',
        x = 'Year\n',
        y = 'Percent of GDP\n',
        caption = 'Compulsory health spending includes government spending and health insurance.\nVisualization by Alex Elfering | Data Source: OECD\nDesign inspired by John Burn-Murdoch') +
