@@ -1,0 +1,49 @@
+Country,Year,Month,Exports (USD Millions)
+India,2019,March,405
+India,2019,April,408
+India,2019,May,387
+India,2019,June,311
+India,2020,March,381
+India,2020,April,220
+India,2020,May,63
+India,2020,June,113
+Bangladesh,2019,March,533
+Bangladesh,2019,April,462
+Bangladesh,2019,May,521
+Bangladesh,2019,June,527
+Bangladesh,2020,March,524
+Bangladesh,2020,April,400
+Bangladesh,2020,May,166
+Bangladesh,2020,June,228
+El Salvador,2019,March,156
+El Salvador,2019,April,147
+El Salvador,2019,May,157
+El Salvador,2019,June,165
+El Salvador,2020,March,143
+El Salvador,2020,April,12
+El Salvador,2020,May,12
+El Salvador,2020,June,22
+Vietnam,2019,March,933
+Vietnam,2019,April,1007
+Vietnam,2019,May,1066
+Vietnam,2019,June,1058
+Vietnam,2020,March,998
+Vietnam,2020,April,805
+Vietnam,2020,May,622
+Vietnam,2020,June,847
+Honduras,2019,March,240
+Honduras,2019,April,223
+Honduras,2019,May,236
+Honduras,2019,June,246
+Honduras,2020,March,191
+Honduras,2020,April,18
+Honduras,2020,May,26
+Honduras,2020,June,71
+Nicaragua,2019,March,150
+Nicaragua,2019,April,138
+Nicaragua,2019,May,138
+Nicaragua,2019,June,145
+Nicaragua,2020,March,140
+Nicaragua,2020,April,66
+Nicaragua,2020,May,62
+Nicaragua,2020,June,82
