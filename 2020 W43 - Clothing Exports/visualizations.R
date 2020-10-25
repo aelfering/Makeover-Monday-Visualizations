@@ -55,12 +55,16 @@ ggplot(yoy_comparison,
   geom_hline(yintercept = 0,
              linetype = 'dashed') +
   geom_line(size = 1.5) +
+  geom_point(subset(yoy_comparison, Month == 'June'),
+             mapping = aes(x = Month),
+             size = 2.5) +
   geom_dl(aes(label = paste('  ', Country, sep = '')), 
           method = list(dl.combine("last.points")), 
           cex = 0.8) +
   scale_y_continuous(labels = percent) +
   scale_color_manual(values = c('#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02')) +
-  labs(title = 'Clothing Exports to the U.S. from El Salvador are Way Down',
+  labs(title = 'Apparel Export Value to the United States is still down from March',
+       subtitle = 'Year-over-year change in value since last year (USD millions)\n\nAs of June 2020, export value of apparel is down between -19% to -86% among countries',
        y = '',
        x = '',
        caption = '\nVisualization by Alex Elfering | Data Source: Data manually lifted from source article. Original source is Otexa') +
