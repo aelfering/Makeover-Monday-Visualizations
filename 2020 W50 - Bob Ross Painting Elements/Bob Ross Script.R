@@ -4,7 +4,7 @@ library(tidyverse)
 library(ggplot2)
 library(ggrepel)
 
-setwd("~/GitHub/Makeover-Monday-Visualizations/2020 W50 - Bob Ross Painting Elements")
+#setwd("~/GitHub/Makeover-Monday-Visualizations/2020 W50 - Bob Ross Painting Elements")
 
 bob_ross <- read.csv('Bob Ross.csv')
 
@@ -123,7 +123,7 @@ server <- shinyServer(function(input, output) {
                                y = Pct.x),
                  color = 'gray',
                  size = 6) +
-      labs(title = paste('Which Elements Appeared in More Bob Ross Paintings in Season ', input$Compare, ' from Season ', input$Base, '?\n', sep = ''),
+      labs(title = paste('Which Elements Appeared in More Bob Ross Paintings in\nSeason ', input$Compare, ' from Season ', input$Base, '?\n', sep = ''),
            x = 'Element\n',
            y = '\nFrequency in Episodes') +
       geom_text(data = index_join %>% slice(which.max(Index)),
@@ -219,7 +219,7 @@ server <- shinyServer(function(input, output) {
                                y = Pct.x),
                  color = 'gray',
                  size = 6) +
-      labs(title = paste('Which Elements Appeared in Less Bob Ross Paintings in Season ', input$Compare, ' from Season ', input$Base, '?\n', sep = ''),
+      labs(title = paste('Which Elements Appeared in Less Bob Ross Paintings in\nSeason ', input$Compare, ' from Season ', input$Base, '?\n', sep = ''),
            x = 'Element\n',
            y = '\nFrequency in Episodes') +
       geom_text(data = index_join %>% slice(which.min(Index)),

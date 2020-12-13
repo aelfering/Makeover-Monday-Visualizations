@@ -1,0 +1,12 @@
+name: MMBobRossShiny
+title: MMBobRossShiny
+username:
+account: aelfering
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3395605
+bundleId: 3983536
+url: https://aelfering.shinyapps.io/MMBobRossShiny/
+when: 1607879149.73941
+asMultiple: FALSE
+asStatic: FALSE
