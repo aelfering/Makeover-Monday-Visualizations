@@ -1,0 +1,17 @@
+﻿Respondent,Response,Year,Value
+Germany,Good,2017,42
+Germany,Good,2018,24
+Germany,Good,2019,34
+Germany,Good,2020,18
+United States,Good,2017,68
+United States,Good,2018,70
+United States,Good,2019,75
+United States,Good,2020,74
+Germany,Bad,2017,56
+Germany,Bad,2018,73
+Germany,Bad,2019,64
+Germany,Bad,2020,79
+United States,Bad,2017,22
+United States,Bad,2018,25
+United States,Bad,2019,17
+United States,Bad,2020,21
